@@ -26,7 +26,7 @@
             margin-bottom: 5px;
         }
         #logo-section h1 {
-            font-size: 26px;
+            font-size: 24px;
             color: #2e2524;
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
@@ -47,7 +47,6 @@
         .logo-graphic .black { background-color: #333; }
         .logo-graphic .white { background-color: #fff; }
     
-
         .title-section {
             text-align: center;
             margin-bottom: 25px;
@@ -63,12 +62,11 @@
 
         .title-section p {
             font-style: italic;
-            font-size: 14px; 
+            font-size: 16px; 
             margin: 1px 0 0;
             color: #333;
         }
         
-
         #wrapper-container {
             width: 100%;
             max-width: 350px; 
@@ -76,7 +74,6 @@
             flex-direction: column;
             align-items: center; 
         }
-
 
         .input-card { 
             background-color: #ffffff;
@@ -124,7 +121,6 @@
             background-color: #d1dfeb;
         }
 
-
         #result-container {
             width: 100%; 
             text-align: left; 
@@ -149,17 +145,15 @@
             font-weight: bold;
         }
 
-
         #status-row {
             font-size: 13px; 
-            color: #777; /* สีเทา */
+            color: #777;
             margin-top: 15px;
         }
 
-
         #loading-box {
-            background-color: #dce6ef; /* สีที่กำหนด: #dce6ef */
-            color: #4a5c71; /* สีโทนเดียวกันแต่เข้มขึ้น */
+            background-color: #dce6ef;
+            color: #4a5c71;
             text-align: center;
             padding: 15px;
             border-radius: 8px;
@@ -167,6 +161,15 @@
             font-weight: bold;
             width: 100%;
             font-size: 18px;
+        }
+        #loading-box.tracking-found {
+            border: 1px solid #acbcc8;
+            padding: 12px;
+            background-color: #dce6ef;
+            color: #425468 !important;
+            font-weight: bold;
+            box-shadow: none;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         /* สไตล์สำหรับเส้นประ */
@@ -203,8 +206,8 @@
 
     <div id="wrapper-container">
         <div class="input-card">
-            <label for="account-input">; @account</label>
-            <input type="text" id="account-input" placeholder="enter your account..." />
+            <label for="account-input">@account</label>
+            <input type="text" id="account-input" placeholder="enter your account..." autocomplete="off"/>
             <button id="go-button">GO!</button>
         </div>
 
@@ -238,55 +241,49 @@
             const detailsSection = document.getElementById('details-section');
             const account = accountInput.value.trim();
 
-            // 1. ตรวจสอบการกรอกข้อมูล
             if (account === '') {
                 resultContainer.classList.remove('show');
-                return; // หยุดการทำงานถ้าไม่มีการกรอกข้อมูล
+                return;
             }
 
-            // 2. แสดงกล่องผลลัพธ์และเข้าสู่สถานะ 'กำลังค้นหา...'
             resultContainer.classList.add('show');
+            loadingBox.classList.remove('tracking-found');
             
-            // ซ่อนหัวข้อและสถานะ
             detailsSection.classList.add('hide-on-loading');
             statusRow.classList.add('hide-on-loading');
 
-            // ตั้งค่ากล่อง Loading
-            loadingBox.textContent = 'กำลังค้นหา...'; 
-            loadingBox.style.backgroundColor = '#dce6ef';
-            loadingBox.style.color = '#4a5c71'; 
+            loadingBox.textContent = 'martin play that beat . . . 🎧'; 
+            loadingBox.style.backgroundColor = '#ffffff';
+            loadingBox.style.color = '#2e2524'; 
             loadingBox.style.fontWeight = 'bold';
             
-            // 3. เริ่มการเรียก API
             const fetchUrl = `${API_ENDPOINT}?account=${encodeURIComponent(account)}`;
 
             fetch(fetchUrl)
                 .then(response => response.json())
                 .then(data => {
-                    // 4. จัดการผลลัพธ์จาก API
                     
                     if (data.found) {
-                        // A. พบข้อมูล (แสดงหัวข้อทั้งหมด)
                         detailsSection.classList.remove('hide-on-loading');
                         statusRow.classList.remove('hide-on-loading');
                         
                         nameDisplay.textContent = data.name;
                         
-                        // อัปเดตกล่อง Loading ด้วย Tracking Number
                         loadingBox.textContent = data.trackingNumber; 
                         loadingBox.style.color = '#2e2524';
                         loadingBox.style.backgroundColor = '#dce6ef'; 
+                        loadingBox.classList.add('tracking-found');
 
-                        // อัปเดต Status
                         statusRow.querySelector('#status-text').textContent = data.status;
 
                     } else {
                         detailsSection.classList.add('hide-on-loading');
                         statusRow.classList.add('hide-on-loading');
 
-                        loadingBox.textContent = 'ไม่พบข้อมูล โปรดลองอีกครั้ง'; 
+                        loadingBox.textContent = 'ไม่พบข้อมูล'; 
                         loadingBox.style.color = '#2e2524'; 
-                        loadingBox.style.backgroundColor = '#ffffff'; 
+                        loadingBox.style.backgroundColor = '#ffffff';
+                        loadingBox.classList.remove('tracking-found'); 
                     }
                 })
                 .catch(error => {
@@ -295,6 +292,7 @@
                     loadingBox.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
                     loadingBox.style.color = 'red';
                     loadingBox.style.backgroundColor = '#dce6ef';
+                    loadingBox.classList.remove('tracking-found');
                     console.error('Fetch error:', error);
                 });
         });
